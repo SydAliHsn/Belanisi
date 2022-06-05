@@ -4,6 +4,6 @@ const storeController = require('./controllers/storeController');
 
 const router = express.Router();
 
-router.put('/placeOrder', storeController.placeOrder);
+router.post('/placeOrder', storeController.placeOrder);
 
 module.exports = router;
