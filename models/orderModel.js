@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
 
-const orderSchema = new mongoose.Schema({
-  // user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, commented for testing
+const orderSchema = new Schema({
+  // user: { type: Schema.Types.ObjectId, ref: 'User' }, commented for testing, un-comment later
   user: String,
 
   // We will use the "id" property as orderNumber
@@ -10,7 +10,7 @@ const orderSchema = new mongoose.Schema({
 
   items: [
     {
-      // product: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' }, commented for testing
+      // product: { type: Schema.Types.ObjectId, ref: 'Product' }, commented for testing, un-comment later
       product: String,
       quanitity: Number,
       size: String,
@@ -19,6 +19,6 @@ const orderSchema = new mongoose.Schema({
   ],
 });
 
-const Order = mongoose.model('Order', orderSchema);
+const Order = model('Order', orderSchema);
 
 module.exports = Order;
