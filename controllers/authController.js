@@ -12,7 +12,7 @@ const createSendToken = (user, statusCode, res) => {
     httpOnly: true,
     expire: process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
   };
-  if (process.env.NODE_ENV === 'production') res.cookie('jwt', token, cookieOptions);
+  res.cookie('jwt', token, cookieOptions);
 
   user.password = undefined;
 
@@ -20,36 +20,44 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.login = async (req, res, next) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
 
-  if (!email || !password)
-    return res
-      .status(400)
-      .json({ status: 'fail', message: 'PLease provide email and password.' });
+    if (!email || !password)
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'PLease provide email and password.' });
 
-  const user = await User.findOne({ email }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
 
-  const correctPassword = await user.correctPassword(password, user.password);
+    const correctPassword = await user.correctPassword(password, user.password);
 
-  if (!correctPassword)
-    return res
-      .status(400)
-      .json({ status: 'fail', message: 'Email or Password incorrect!' });
+    if (!correctPassword)
+      return res
+        .status(400)
+        .json({ status: 'fail', message: 'Email or Password incorrect!' });
 
-  createSendToken(user, 200, res);
+    createSendToken(user, 200, res);
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
 };
 
 exports.signup = async (req, res, next) => {
-  const userData = {
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    phone: req.body.phone,
-    role: req.body.role,
-  };
+  try {
+    const userData = {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password,
+      phone: req.body.phone,
+      role: req.body.role,
+    };
 
-  const user = await User.create(userData);
+    const user = await User.create(userData);
 
-  createSendToken(user, 201, res);
+    createSendToken(user, 201, res);
+  } catch (err) {
+    res.status(400).json({ status: 'fail', message: err.message });
+  }
 };

@@ -6429,7 +6429,7 @@ input[type="number"]::-webkit-outer-spin-button {
   max-width: 880px;
   max-height: 80vh;
   border-radius: 10px;
-  background: #fff;
+  background: var(--bg-color);
   overflow: auto;
   cursor: default;
   padding: 20px;
@@ -6545,9 +6545,9 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .variant__input--fieldset input[type="radio"] + label {
   border: 1px solid var(--primary-color);
+  transition: none;
 }
 .variant__input--fieldset input[type="radio"] + label:hover {
-  border: 1px solid var(--secondary-color);
   color: var(--secondary-color);
 }
 .variant__input--fieldset {
@@ -6569,7 +6569,8 @@ input[type="number"]::-webkit-outer-spin-button {
   width: 1px;
 }
 .variant__input--fieldset input[type="radio"]:checked + label {
-  border: 1px solid var(--secondary-color);
+  outline: 2px solid var(--secondary-color);
+  outline-offset: 1px;
   color: var(--secondary-color);
 }
 .variant__input--fieldset:last-child {
@@ -7345,6 +7346,7 @@ input.quickview__value--number {
   cursor: pointer;
   border-radius: 0.5rem;
   background: var(--bg-color);
+  color: white;
 }
 .select.shop__header--select::before {
   right: 14px;
@@ -11100,6 +11102,7 @@ details > summary::-webkit-details-marker {
     display: none;
   }
 }
+
 
 .options-section__container {
   text-align: center;
