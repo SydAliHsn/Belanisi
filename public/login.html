@@ -1844,11 +1844,13 @@
                       class="account__login--input login--email"
                       placeholder="Email Address"
                       type="email"
+                      required
                     />
                     <input
                       class="account__login--input login--password"
                       placeholder="Password"
                       type="password"
+                      required
                     />
                     <div
                       class="account__login--remember__forgot mb-15 d-flex justify-content-between align-items-center"
@@ -1867,8 +1869,9 @@
                     <div class="account__login--divide">
                       <span class="account__login--divide__text">OR</span>
                     </div>
+                    <h3 class="account-login__contact-heading">Contact us</h3>
                     <div
-                      class="account__social d-flex justify-content-center mb-15"
+                    class="account__social d-flex justify-content-center mb-15"
                     >
                       <a
                         class="account__social--link facebook"
@@ -1908,22 +1911,31 @@
                       class="account__login--input signup--name"
                       placeholder="Name"
                       type="text"
+                      required
                     />
                     <input
                       class="account__login--input signup--email"
                       placeholder="Email Address"
                       type="email"
+                      required
                     />
                     <input
                       class="account__login--input signup--password"
                       placeholder="Password"
                       type="password"
+                      required
                     />
                     <input
                       class="account__login--input signup--password-confirm"
                       placeholder="Confirm Password"
                       type="password"
+                      required
                     />
+                    <select class="account__login--input signup--role">
+                      <option value=""  disabled selected >Role</option>
+                      <option value="customer">Customer</option>
+                      <option value="creator">Creator / Seller</option>
+                  </select>
                     <button
                       class="account__login--btn primary__btn mb-10"
                       type="submit"

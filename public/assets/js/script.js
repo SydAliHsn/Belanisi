@@ -632,3 +632,13 @@ const newsletterPopup = function () {
     });
 };
 newsletterPopup();
+
+// Signup Login Select Option
+const roleSelect = document.querySelector("select.account__login--input");
+
+roleSelect.style.color = "gray";
+
+roleSelect.addEventListener("change", () => {
+  if (roleSelect.selectedIndex) roleSelect.style.color = "black";
+});
+// Signup Login Select Option

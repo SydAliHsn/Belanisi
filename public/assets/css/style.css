@@ -10396,6 +10396,10 @@ details > summary::-webkit-details-marker {
   -webkit-transform: translatey(-50%);
   transform: translatey(-50%);
 }
+.account-login__contact-heading {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 .account__login--divide__text {
   padding: 0 0.8rem;
   background: var(--bg-color);
@@ -11102,7 +11106,6 @@ details > summary::-webkit-details-marker {
     display: none;
   }
 }
-
 
 .options-section__container {
   text-align: center;
