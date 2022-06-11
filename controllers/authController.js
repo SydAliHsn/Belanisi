@@ -1,5 +1,8 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
+const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/AppError');
 const User = require('../models/userModel');
 
 const signToken = id =>
@@ -10,54 +13,60 @@ const createSendToken = (user, statusCode, res) => {
 
   const cookieOptions = {
     httpOnly: true,
-    expire: process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    expire: Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
   };
-  res.cookie('jwt', token, cookieOptions);
+  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+  res.cookie('JWT', token, cookieOptions);
 
   user.password = undefined;
 
   res.status(statusCode).json({ status: 'success', user, token });
 };
 
-exports.login = async (req, res, next) => {
-  try {
-    const email = req.body.email;
-    const password = req.body.password;
+exports.protect = catchAsync(async (req, res, next) => {
+  const token = req.cookies.JWT;
 
-    if (!email || !password)
-      return res
-        .status(400)
-        .json({ status: 'fail', message: 'PLease provide email and password.' });
+  if (!token) return next(new AppError(401, 'You are not logged in! Please log in to get access.'));
 
-    const user = await User.findOne({ email }).select('+password');
+  const decoded = await promisify(jwt.verify)(token, process.env.NODE_ENV);
 
-    const correctPassword = await user.correctPassword(password, user.password);
+  const user = User.findById(decoded.id);
 
-    if (!correctPassword)
-      return res
-        .status(400)
-        .json({ status: 'fail', message: 'Email or Password incorrect!' });
+  if (!user) return next(new AppError(401, 'The user belonging to this token no longer exists.'));
 
-    createSendToken(user, 200, res);
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
-  }
-};
+  if (user.passwordChangedAfter(decoded.iat))
+    return next(
+      new AppError(401, 'The password was changed recently. Please log in again to get access.')
+    );
 
-exports.signup = async (req, res, next) => {
-  try {
-    const userData = {
-      name: req.body.name,
-      email: req.body.email,
-      password: req.body.password,
-      phone: req.body.phone,
-      role: req.body.role,
-    };
+  next();
+});
 
-    const user = await User.create(userData);
+exports.login = catchAsync(async (req, res, next) => {
+  const email = req.body.email;
+  const password = req.body.password;
 
-    createSendToken(user, 201, res);
-  } catch (err) {
-    res.status(400).json({ status: 'fail', message: err.message });
-  }
-};
+  if (!email || !password) return next(new AppError(400, 'Please provide email and password.'));
+
+  const user = await User.findOne({ email }).select('+password');
+
+  if (!user || !(await user.correctPassword(password, user.password)))
+    return next(new AppError(400, 'Email or Password incorrect!'));
+
+  createSendToken(user, 200, res);
+});
+
+exports.signup = catchAsync(async (req, res, next) => {
+  const userData = {
+    name: req.body.name,
+    email: req.body.email,
+    password: req.body.password,
+    passwordConfirm: req.body.passwordConfirm,
+    phone: req.body.phone,
+    role: req.body.role,
+  };
+
+  const user = await User.create(userData);
+
+  createSendToken(user, 201, res);
+});
