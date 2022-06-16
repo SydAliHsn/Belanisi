@@ -2,19 +2,32 @@ const { Schema, model } = require('mongoose');
 
 const productSchema = new Schema({
   name: { type: String, required: [true, 'A product must have a name.'], trim: true },
+
   images: {
     type: [String],
     validate: {
-      validator: value => value.length >= 1,
+      validator: val => val.length >= 1,
       message: 'Product must have at least one image.',
     },
   },
+
   material: String,
+
   description: String,
+
+  sizes: {
+    type: [String],
+    required: [true, 'Please specify the available styles for this product.'],
+    validate: {
+      validator: val => val.length >= 1,
+      message: 'Product must have at least one style.',
+    },
+  },
+
   creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: 'A product must have a creator/seller.',
+    required: 'A product must belong to a creator/seller.',
   },
 });
 
