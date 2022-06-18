@@ -5,8 +5,9 @@ const xss = require('xss-clean');
 const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 
-const userRoutes = require('./routes/userRoutes');
-const storeRoutes = require('./routes/storeRoutes');
+const userRouter = require('./routes/userRoutes');
+const orderRouter = require('./routes/orderRoutes');
+const productRouter = require('./routes/productRoutes');
 const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
@@ -30,8 +31,9 @@ app.use(xss());
 app.use(mongoSanitize());
 
 // Routes
-app.use('/api/v1/store', storeRoutes);
-app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/products', productRouter);
+app.use('/api/v1/orders', orderRouter);
+app.use('/api/v1/users', userRouter);
 
 // Error handler
 app.use(globalErrorHandler);

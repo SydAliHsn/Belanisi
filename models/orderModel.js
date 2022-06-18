@@ -1,22 +1,21 @@
 const { Schema, model } = require('mongoose');
 
+// Use the "id" property as orderNumber
 const orderSchema = new Schema({
-  // user: { type: Schema.Types.ObjectId, ref: 'User' }, commented for testing, un-comment later
-  user: String,
-
-  // We will use the "id" property as orderNumber
+  user: { type: Schema.Types.ObjectId, ref: 'User' },
 
   repeatRate: Number,
 
   items: [
     {
-      // product: { type: Schema.Types.ObjectId, ref: 'Product' }, commented for testing, un-comment later
-      product: String,
+      product: { type: Schema.Types.ObjectId, ref: 'Product' },
       quanitity: Number,
       size: String,
       color: String,
     },
   ],
+
+  fulfilled: { type: Boolean, default: false },
 });
 
 const Order = model('Order', orderSchema);

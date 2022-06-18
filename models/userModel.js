@@ -31,7 +31,7 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: {
-      values: ['customer', 'creator'],
+      values: ['customer', 'creator', 'admin'],
       message: 'The role can either be customer or creator.',
     },
     default: 'customer',
@@ -56,7 +56,7 @@ userSchema.pre('save', function (next) {
 });
 
 userSchema.pre(/^find/, function (next) {
-  this.select('-__v');
+  this.select('-__v -passwordChangedAt');
 
   next();
 });

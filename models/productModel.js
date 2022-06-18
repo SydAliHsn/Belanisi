@@ -11,7 +11,7 @@ const productSchema = new Schema({
     },
   },
 
-  material: String,
+  materials: String,
 
   description: String,
 
@@ -27,7 +27,7 @@ const productSchema = new Schema({
   creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: 'A product must belong to a creator/seller.',
+    required: [true,'A product must belong to a creator/seller.'],
   },
 });
 
