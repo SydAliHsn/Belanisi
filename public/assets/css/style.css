@@ -10779,6 +10779,7 @@ details > summary::-webkit-details-marker {
     width: 7em;
   }
 }
+/* End preloader */
 .privacy__policy--content {
   margin-bottom: 2rem;
 }
