@@ -15,6 +15,8 @@ const orderSchema = new Schema({
     },
   ],
 
+  orderDate: { type: Date, default: Date.now },
+
   fulfilled: { type: Boolean, default: false },
 });
 

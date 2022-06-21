@@ -10,21 +10,24 @@ router
   .get(productController.getAllProducts)
   .post(
     authController.protect,
-    authController.restrict('creator'),
+    authController.restrict('creator', 'admin'),
     productController.createProduct
   );
+
+router.get('/popular', productController.getPopular);
+router.get('/newlyAdded', productController.getnewlyAdded);
 
 router
   .route('/:id')
   .get(productController.getProduct)
   .patch(
     authController.protect,
-    authController.restrict('creator'),
+    authController.restrict('creator', 'admin'),
     productController.updateProduct
   )
   .delete(
     authController.protect,
-    authController.restrict('creator'),
+    authController.restrict('creator', 'admin'),
     productController.deleteProduct
   );
 

@@ -41,6 +41,7 @@ exports.protect = catchAsync(async (req, res, next) => {
     );
   }
 
+  // Grant access to the protected routes
   req.user = user;
 
   next();
@@ -54,8 +55,9 @@ exports.login = catchAsync(async (req, res, next) => {
 
   const user = await User.findOne({ email }).select('+password');
 
-  if (!user || !(await user.correctPassword(password, user.password)))
+  if (!user || !(await user.correctPassword(password, user.password))) {
     return next(new AppError(400, 'Email or Password incorrect!'));
+  }
 
   createSendToken(user, 200, res);
 });
@@ -84,3 +86,18 @@ exports.restrict = (...roles) => {
     next();
   };
 };
+
+exports.updatePassword = catchAsync(async (req, res, next) => {
+  const user = await User.findById(req.user.id).select('+password');
+
+  if (!(await user.correctPassword(req.body.currPassword, user.password))) {
+    return next(new AppError(400, 'Your current password is wrong!'));
+  }
+
+  user.password = req.body.password;
+  user.passwordConfirm = req.body.passwordConfirm;
+
+  await user.save();
+
+  createSendToken(user, 200, res);
+});

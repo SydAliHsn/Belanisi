@@ -17,18 +17,23 @@ const productSchema = new Schema({
 
   sizes: {
     type: [String],
-    required: [true, 'Please specify the available styles for this product.'],
+    required: [true, 'Please specify the available sizes for this product.'],
     validate: {
       validator: val => val.length >= 1,
-      message: 'Product must have at least one style.',
+      message: 'Product must have at least one size.',
     },
   },
 
   creator: {
     type: Schema.Types.ObjectId,
     ref: 'User',
-    required: [true,'A product must belong to a creator/seller.'],
+    required: [true, 'A product must belong to a creator/seller.'],
   },
+
+  // Click-Through-Rate
+  ctr: Number,
+
+  createdAt: { type: Date, default: Date.now },
 });
 
 const Product = model('Product', productSchema);

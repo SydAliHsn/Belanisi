@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const userSchema = new Schema({
   name: String,
+
   email: {
     type: String,
     required: [true, 'Please provide your email.'],
@@ -31,11 +32,21 @@ const userSchema = new Schema({
   role: {
     type: String,
     enum: {
-      values: ['customer', 'creator', 'admin'],
+      values: [
+        'customer',
+        'yayasan',
+        'public-figure',
+        'company',
+        'campaign-maker',
+        'admin',
+        'super-admin',
+      ],
       message: 'The role can either be customer or creator.',
     },
     default: 'customer',
   },
+
+  active: { type: Boolean, default: true, select: false },
 });
 
 userSchema.pre('save', async function (next) {
@@ -51,6 +62,12 @@ userSchema.pre('save', function (next) {
   if (!this.isModified('password') || this.isNew) return next();
 
   this.passwordChangedAt = Date.now() - 1000;
+
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
 
   next();
 });
