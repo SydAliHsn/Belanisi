@@ -2,13 +2,14 @@
 :root {
   --primary-color: #061738;
   --secondary-color: #ee2761;
+  --secondary-dark-color: #c92150;
   --yellow-color: #ffc107;
   --text-dark-gray-color: #646464;
   --text-gray-color: #b9b9b9;
-  --text-light-color: #cfcfcf;
+  --text-light-color: #c7c7c7;
   --white-color: #ffffff;
   --bg-color: #000000;
-  --bg-light-color: #0a0e18;
+  --bg-light-color: #0c1220;
   --ofwhite-color: #b4b4b4;
   --black-color: #ffffff;
   --light-color: #000000;
@@ -2630,16 +2631,16 @@ body.overlay__active::before {
 }
 .header__search--button {
   position: absolute;
-  top: -1px;
-  right: -1px;
-  height: 102%;
+  top: 0px;
+  right: 0px;
+  height: 100%;
   border: 0;
   padding: 0 1.5rem;
   line-height: 2rem;
   background: var(--secondary-color);
 }
 .header__search--button:hover {
-  background: var(--primary-color);
+  background-color: var(--secondary-dark-color);
 }
 .header__account--items {
   margin-right: 2rem;
@@ -3665,7 +3666,7 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 
 .banner-fundraise {
-  margin-top: 5rem;
+  margin-top: 10rem;
 }
 .banner-fundraise__container {
   margin-top: 3rem;
@@ -3697,11 +3698,11 @@ input[type="number"]::-webkit-outer-spin-button {
 }
 .banner-fundraise__image-container {
   overflow: hidden;
-  height: 70vh;
+  max-height: 70vh;
 }
 @media only screen and (max-width: 767px) {
   .banner-fundraise__image-container {
-    height: 60vh;
+    max-height: 30rem;
   }
 }
 .banner-fundraise__image-container img {
@@ -3709,41 +3710,34 @@ input[type="number"]::-webkit-outer-spin-button {
   object-position: 20px -70px;
 }
 
-@media only screen and (min-width: 768px) {
+.banner-store__container p {
+  padding: 2rem 0;
+}
+.banner-store__img {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+}
+.banner-store__content {
+  margin-top: 2.5rem;
+  text-align: center;
+}
+@media (min-width: 768px) {
   .banner-store__container {
     display: grid;
-    grid-template-columns: 4fr 2fr;
-    grid-gap: 4rem;
+    grid-template-columns: 4fr 4fr;
+    grid-gap: 2rem;
   }
-}
-.banner-store__image-container {
-  overflow: hidden;
-  height: 70vh;
-}
-@media only screen and (max-width: 767px) {
-  .banner-store__image-container {
-    height: 60vh;
-  }
-}
-.banner-store__image-container img {
-  object-fit: cover;
-  object-position: 20px -70px;
-}
-@media only screen and (max-width: 767px) {
   .banner-store__content {
-    margin-top: 2rem;
-    text-align: center;
+    margin-top: 0;
+    text-align: left;
   }
 }
-.banner-store__content h2 {
-  margin-bottom: 2rem;
-}
-@media only screen and (min-width: 768px) {
-  .banner-store__text {
-    font-size: 1.8rem;
-  }
-  .banner-store__content .primary__btn {
-    margin-top: 2rem;
+@media (min-width: 992px) {
+  .banner-store__container {
+    display: grid;
+    grid-template-columns: 6fr 4fr;
+    grid-gap: 4rem;
   }
 }
 
