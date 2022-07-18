@@ -1,52 +1,66 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const userSchema = new Schema({
-  name: String,
+const availableRoles = [
+  'customer',
+  'yayasan',
+  'public-figure',
+  'company',
+  'campaign-maker',
+  'admin',
+  'super-admin',
+];
 
-  email: {
-    type: String,
-    required: [true, 'Please provide your email.'],
-    unique: [true, 'An account with this email already exists! Try logging in.'],
-  },
+const userSchema = new Schema(
+  {
+    name: String,
 
-  password: {
-    type: String,
-    required: [true, 'Please provide a password.'],
-    minlength: [8, 'Please provide a strong password atleast 8 characters long.'],
-    select: false,
-  },
+    email: {
+      type: String,
+      required: [true, 'Please provide your email.'],
+      unique: [true, 'An account with this email already exists! Try logging in.'],
+    },
 
-  passwordConfirm: {
-    type: String,
-    validate: {
-      validator: function (val) {
-        return this.password === val;
+    password: {
+      type: String,
+      required: [true, 'Please provide a password.'],
+      minlength: [8, 'Please provide a strong password atleast 8 characters long.'],
+      select: false,
+    },
+
+    passwordConfirm: {
+      type: String,
+      validate: {
+        validator: function (val) {
+          return this.password === val;
+        },
+        message: 'Passwords are not the same!',
       },
-      message: 'Passwords are not the same!',
     },
-  },
 
-  passwordChangedAt: Date,
+    passwordChangedAt: Date,
 
-  role: {
-    type: String,
-    enum: {
-      values: [
-        'customer',
-        'yayasan',
-        'public-figure',
-        'company',
-        'campaign-maker',
-        'admin',
-        'super-admin',
-      ],
-      message: 'The role can either be customer or creator.',
+    role: {
+      type: String,
+      enum: {
+        values: availableRoles,
+        message: 'The role can only be: ' + availableRoles,
+      },
+      default: 'customer',
     },
-    default: 'customer',
-  },
 
-  active: { type: Boolean, default: true, select: false },
+    active: { type: Boolean, default: true, select: false },
+  },
+  {
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  }
+);
+
+userSchema.virtual('orders', {
+  ref: 'Order',
+  foreignField: 'user',
+  localField: '_id',
 });
 
 userSchema.pre('save', async function (next) {

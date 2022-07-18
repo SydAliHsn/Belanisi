@@ -17,7 +17,7 @@ const createSendToken = (user, statusCode, res) => {
     expire: Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
   };
   if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
-  res.cookie('JWT', token, cookieOptions);
+  res.cookie('belinasiToken', token, cookieOptions);
 
   user.password = undefined;
 
@@ -25,7 +25,7 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.protect = catchAsync(async (req, res, next) => {
-  const token = req.cookies.JWT;
+  const token = req.cookies.belinasiToken;
 
   if (!token) return next(new AppError(401, 'You are not logged in! Please log in to get access.'));
 
@@ -77,7 +77,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   createSendToken(user, 201, res);
 });
 
-exports.restrict = (...roles) => {
+exports.logout = catchAsync(async (req, res, next) => {
+  res.status(204).clearCookie('belinasiToken').json({ status: 'success', data: null });
+});
+
+exports.restrictTo = (...roles) => {
   return (req, _, next) => {
     if (!roles.includes(req.user.role)) {
       next(new AppError(403, "You don't have the permission to perform this action!"));

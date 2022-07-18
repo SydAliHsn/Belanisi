@@ -10,7 +10,7 @@ router
   .get(campaignController.getAllCampaigns)
   .post(
     authController.protect,
-    authController.restrict(
+    authController.restrictTo(
       'yayasan',
       'campaign-maker',
       'company',
@@ -23,7 +23,7 @@ router
 
 router.route('/:id').get(campaignController.getCampaign);
 
-router.get('/popular', productController.getPopular);
-router.get('/newlyAdded', productController.getnewlyAdded);
+// router.get('/popular', productController.getPopular);
+// router.get('/newlyAdded', productController.getnewlyAdded);
 
 module.exports = router;

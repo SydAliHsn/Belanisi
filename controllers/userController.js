@@ -19,17 +19,25 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 exports.getUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.params.id);
+  const user = await User.findById(req.params.id).populate('orders');
+  // const user = await User.findById(req.params.id);
 
-  if (!user) return next(new AppError(404, 'User not found!'));
+  if (!user) {
+    return next(new AppError(404, 'User not found!'));
+  }
 
   res.status(200).json({ status: 'success', data: { user } });
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findById(req.user.id);
+  const user = await User.findById(req.user.id).select('+password');
 
   if (!user) return next(new AppError(404, 'User not found!'));
+
+  const password = req.body.password;
+  if (!password || !(await user.correctPassword(password, user.password))) {
+    return next(new AppError(400, 'Incorrect password!'));
+  }
 
   user.active = false;
 

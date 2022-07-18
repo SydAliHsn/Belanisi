@@ -10,24 +10,39 @@ router
   .get(productController.getAllProducts)
   .post(
     authController.protect,
-    authController.restrict('creator', 'admin'),
+    authController.restrictTo(
+      'yayasan',
+      'campaign-maker',
+      'company',
+      'public-figure',
+      'admin',
+      'super-admin'
+    ),
     productController.createProduct
   );
 
-router.get('/popular', productController.getPopular);
-router.get('/newlyAdded', productController.getnewlyAdded);
+router.get('/trending', productController.getTrending);
+router.get('/newlyAdded', productController.getNewlyAdded);
+router.get('/featured', productController.getFeatured);
 
 router
   .route('/:id')
   .get(productController.getProduct)
   .patch(
     authController.protect,
-    authController.restrict('creator', 'admin'),
+    authController.restrictTo('creator', 'admin'),
     productController.updateProduct
   )
   .delete(
     authController.protect,
-    authController.restrict('creator', 'admin'),
+    authController.restrictTo(
+      'yayasan',
+      'campaign-maker',
+      'company',
+      'public-figure',
+      'admin',
+      'super-admin'
+    ),
     productController.deleteProduct
   );
 

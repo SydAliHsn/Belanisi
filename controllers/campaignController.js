@@ -30,13 +30,8 @@ exports.createCampaign = catchAsync(async (req, res, next) => {
   const campaignData = {
     title: req.body.title,
     description: req.body.description,
+    category: req.body.category,
     URL: req.body.URL,
-    product: req.body.product,
-    design: req.body.design,
-    colors: req.body.colors,
-    baseCost: req.body.baseCost,
-    price: req.body.price,
-    numOfProducts: req.body.numOfProducts,
     startDate: req.body.startDate,
     endDate: req.body.endDate,
   };

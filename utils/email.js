@@ -12,7 +12,7 @@ const sendEmail = async options => {
   });
 
   await transporter.sendMail({
-    from: 'Belanisi <Contact@Belanisi.com>', // CHANGE IT LATER
+    from: 'Belanisi <Contact@Belinasi.com>', // CHANGE IT LATER
     to: options.email,
     subject: options.subject,
     text: options.message,

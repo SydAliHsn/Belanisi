@@ -6,19 +6,36 @@ const mongoSanitize = require('express-mongo-sanitize');
 const helmet = require('helmet');
 const cors = require('cors');
 
+const AppError = require('./utils/AppError');
 const userRouter = require('./routes/userRoutes');
 const orderRouter = require('./routes/orderRoutes');
 const productRouter = require('./routes/productRoutes');
-const charityRouter = require('./routes/charityRoutes');
+const campaignRouter = require('./routes/campaignRoutes');
+const transactionRouter = require('./routes/transactionRoutes');
 const globalErrorHandler = require('./controllers/errorController');
-const AppError = require('./utils/AppError');
 
 const app = express();
 
 // Middlewares
-app.use(helmet({ crossOriginEmbedderPolicy: false }));
+// app.use(helmet({ crossOriginEmbedderPolicy: false }));
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        ...helmet.contentSecurityPolicy.getDefaultDirectives(),
+        'img-src': ["'self'", '*'],
+        // 'script-src': ["'self'", '*'],
+      },
+    },
+  })
+);
 
-app.use(cors());
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({ credentials: true, origin: 'http://127.0.0.1:3000' }));
+}
+if (process.env.NODE_ENV === 'production') {
+  app.use(cors());
+}
 
 const limiter = rateLimit({
   max: 500,
@@ -28,7 +45,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 app.use(cookieParser());
-app.use(express.static('public'));
+
 app.use(express.json());
 
 app.use(xss());
@@ -39,7 +56,16 @@ app.use(mongoSanitize());
 app.use('/api/v1/products', productRouter);
 app.use('/api/v1/orders', orderRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/charities', charityRouter);
+app.use('/api/v1/campaigns', campaignRouter);
+app.use('/api/v1/transactions', transactionRouter);
+
+// Admin Frontend
+app.use('/admin', express.static('admin-build'));
+app.use('/admin/:routes', express.static('admin-build'));
+
+// General Frontend
+app.use('/', express.static('build'));
+app.use('/:routes', express.static('build'));
 
 app.all('*', (req, res, next) => {
   next(new AppError(404, 'This path does not exist on this server!'));
