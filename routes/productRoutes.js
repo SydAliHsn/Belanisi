@@ -21,9 +21,14 @@ router
     productController.createProduct
   );
 
-router.get('/trending', productController.getTrending);
 router.get('/newlyAdded', productController.getNewlyAdded);
-router.get('/featured', productController.getFeatured);
+
+router.get(
+  '/analytics/:productId/:type/:time',
+  authController.protect,
+  authController.restrictTo('super-admin', 'admin'),
+  productController.getProductAnalytics
+);
 
 router
   .route('/:id')

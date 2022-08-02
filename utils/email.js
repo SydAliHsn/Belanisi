@@ -1,7 +1,19 @@
 const nodemailer = require('nodemailer');
 
-const sendEmail = async options => {
-  const transporter = nodemailer.createTransport({
+const createTransport = () => {
+  if (process.env.NODE_ENV === 'production') {
+    return nodemailer.createTransport({
+      host: process.env.SENDINBLUE_HOST,
+      port: process.env.SENDINBLUE_PORT,
+
+      auth: {
+        user: process.env.SENDINBLUE_USER,
+        pass: process.env.SENDINBLUE_PASSWORD,
+      },
+    });
+  }
+
+  return nodemailer.createTransport({
     host: process.env.EMAIL_HOST, // USING mailtrap.io as an email trap for testing, change it before production
     port: process.env.EMAIL_PORT,
 
@@ -10,14 +22,20 @@ const sendEmail = async options => {
       pass: process.env.EMAIL_PASSWORD,
     },
   });
+};
 
-  await transporter.sendMail({
-    from: 'Belanisi <Contact@Belinasi.com>', // CHANGE IT LATER
+const sendEmail = async options => {
+  const transporter = createTransport();
+
+  let mailObj = {
+    from: `Belinasi <${process.env.EMAIL_FROM}>`,
     to: options.email,
     subject: options.subject,
-    text: options.message,
-    // html: options.html,
-  });
+  };
+
+  options.html ? (mailObj.html = options.html) : (mailObj.text = options.message);
+
+  await transporter.sendMail(mailObj);
 };
 
 module.exports = sendEmail;

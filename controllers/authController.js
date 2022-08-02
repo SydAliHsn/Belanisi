@@ -74,6 +74,14 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const user = await User.create(userData);
 
+  sendEmail({
+    email: user.email,
+    subject: 'Welcome to Belinasi',
+    message: `Thanks ${
+      user.name.split(' ')[0]
+    } for signing up to Belinasi. Let's start buying and donating!`,
+  });
+
   createSendToken(user, 201, res);
 });
 

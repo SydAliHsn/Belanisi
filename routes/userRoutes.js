@@ -14,10 +14,52 @@ router.patch('/updatePassword', authController.protect, authController.updatePas
 
 router.delete('/deleteMe', authController.protect, userController.deleteUser);
 
-router.get('/', userController.getAllUsers);
+router.get(
+  '/',
+  authController.protect,
+  authController.restrictTo('admin', 'super-admin'),
+  userController.getAllUsers
+);
 
-router.route('/:id').get(userController.getUser);
-//   .delete(userController.deleteUser)
-//   .patch(userController.updateUser);
+router.post(
+  '/mail',
+  authController.protect,
+  authController.restrictTo('admin', 'super-admin'),
+  userController.mail
+);
+
+router.get('/getMe', authController.protect, userController.getMe);
+
+router.get(
+  '/new',
+  authController.protect,
+  authController.restrictTo('admin', 'super-admin'),
+  userController.getNewUsers
+);
+
+router
+  .route('/:id')
+  .get(
+    authController.protect,
+    authController.restrictTo('admin', 'super-admin'),
+    userController.getUser
+  )
+  .delete(
+    authController.protect,
+    authController.restrictTo('admin', 'super-admin'),
+    userController.deleteUser
+  )
+  .patch(
+    authController.protect,
+    authController.restrictTo('admin', 'super-admin'),
+    userController.updateUser
+  );
+
+router.post(
+  '/:id/mail',
+  authController.protect,
+  authController.restrictTo('admin', 'super-admin'),
+  userController.mail
+);
 
 module.exports = router;

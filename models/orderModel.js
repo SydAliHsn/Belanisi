@@ -48,6 +48,12 @@ orderSchema.pre(/^find/, function (next) {
   next();
 });
 
+orderSchema.pre(/^find/, function (next) {
+  this.populate('user', 'name');
+
+  next();
+});
+
 orderSchema.methods.getTotalAmount = async function () {
   let totalAmount = 0;
 

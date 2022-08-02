@@ -1,6 +1,5 @@
 const { Schema, model } = require('mongoose');
 
-const productTypes = ['t-shirts']; // Add more later
 const availableCategories = [
   'medical',
   'elderly',
@@ -29,8 +28,9 @@ const campaignSchema = new Schema(
       unique: [true, 'A campaign with this title already exists.'],
       required: true,
     },
-    description: String, // can be text, image or video (using URL of the image or video)
-    URL: String,
+    images: [String],
+    description: { type: String, required: [true, 'Please write a description for the campaign.'] },
+    video: String,
 
     category: {
       type: String,
@@ -55,6 +55,12 @@ const campaignSchema = new Schema(
 
     // numOfProducts: Number,
 
+    creator: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'A product must have a creator.'],
+    },
+
     startDate: Date,
     endDate: Date,
   },
@@ -63,6 +69,12 @@ const campaignSchema = new Schema(
     toObject: { virtuals: true },
   }
 );
+
+campaignSchema.pre(/^find/, function (next) {
+  this.populate('creator', 'name');
+
+  next();
+});
 
 const Campaign = model('Campaign', campaignSchema);
 

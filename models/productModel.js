@@ -21,7 +21,7 @@ const productSchema = new Schema(
 
     materials: String,
 
-    description: String,
+    message: String,
 
     sizes: {
       type: [String],
@@ -69,18 +69,41 @@ const productSchema = new Schema(
   }
 );
 
+// Create indexes for search
+productSchema.index(
+  {
+    name: 'text',
+    message: 'text',
+    campaign: 'text',
+    materials: 'text',
+    category: 'text',
+    creator: 'text',
+    availableColors: 'text',
+  },
+  {
+    name: 'text_search_index',
+    weights: {
+      name: 9,
+      message: 5,
+      campaign: 7,
+      materials: 2,
+      category: 4,
+      creator: 6,
+      availableColors: 1,
+    },
+  }
+);
+
 productSchema.pre(/^find/, function (next) {
-  this.populate('campaign', 'title').populate('creator', 'name');
+  this.select('-__v');
 
   next();
 });
 
-productSchema.virtual('ctr').get(function () {
-  return this.views && this.clicks ? this.views / this.clicks || 1 : null;
-});
+productSchema.pre(/^find/, function (next) {
+  this.populate('campaign', 'title').populate('creator', 'name');
 
-productSchema.virtual('conversionRate').get(function () {
-  return this.sales && this.clicks ? this.sales / this.clicks : null;
+  next();
 });
 
 const Product = model('Product', productSchema);

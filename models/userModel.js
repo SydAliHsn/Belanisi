@@ -38,6 +38,8 @@ const userSchema = new Schema(
       },
     },
 
+    createdAt: { type: Date, default: Date.now },
+
     passwordChangedAt: Date,
 
     role: {
@@ -48,6 +50,8 @@ const userSchema = new Schema(
       },
       default: 'customer',
     },
+
+    totalOrders: { type: Number, default: 0 },
 
     active: { type: Boolean, default: true, select: false },
   },

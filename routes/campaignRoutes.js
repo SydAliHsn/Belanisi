@@ -21,7 +21,10 @@ router
     campaignController.createCampaign
   );
 
-router.route('/:id').get(campaignController.getCampaign);
+router
+  .route('/:id')
+  .get(campaignController.getCampaign)
+  .patch(authController.protect, campaignController.updateCampaign);
 
 // router.get('/popular', productController.getPopular);
 // router.get('/newlyAdded', productController.getnewlyAdded);

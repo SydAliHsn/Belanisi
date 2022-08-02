@@ -1,11 +1,11 @@
 module.exports = class {
   constructor(query, queryString) {
     this.query = query;
-    this.queryString = queryString;
+    this.queryObj = queryString;
   }
 
   filter() {
-    const queryObj = { ...this.queryString };
+    const queryObj = { ...this.queryObj };
 
     // remove advanced fields
     const exculededFields = ['sort', 'page', 'limit', 'fields'];
@@ -14,16 +14,22 @@ module.exports = class {
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte)\b/g, match => `$${match}`);
 
-    // console.log(JSON.parse(queryStr));
-
     this.query.find(JSON.parse(queryStr));
 
     return this;
   }
 
+  querySearch() {
+    if (this.queryObj.q) {
+      this.query.find({ $text: { $search: this.queryObj.q } });
+    }
+
+    return this;
+  }
+
   sort() {
-    if (this.queryString.sort) {
-      const sortBy = this.queryString.sort.split(',').join(' ');
+    if (this.queryObj.sort) {
+      const sortBy = this.queryObj.sort.split(',').join(' ');
 
       this.query.sort(sortBy);
     } else {
@@ -34,10 +40,8 @@ module.exports = class {
   }
 
   limitFields() {
-    if (this.queryString.fields) {
-      const selectedFields = this.queryString.fields.split(',').join(' ');
-
-      console.log(selectedFields);
+    if (this.queryObj.fields) {
+      const selectedFields = this.queryObj.fields.split(',').join(' ');
 
       this.query.select(selectedFields);
     } else {
@@ -48,8 +52,8 @@ module.exports = class {
   }
 
   paginate() {
-    const page = +this.queryString.page || 1;
-    const limit = +this.queryString.limit || 25;
+    const page = +this.queryObj.page || 1;
+    const limit = +this.queryObj.limit || 25;
     const skip = (page - 1) * limit;
 
     this.query.skip(skip).limit(limit);
