@@ -3,8 +3,7 @@ const nodemailer = require('nodemailer');
 const createTransport = () => {
   if (process.env.NODE_ENV === 'production') {
     return nodemailer.createTransport({
-      host: process.env.SENDINBLUE_HOST,
-      port: process.env.SENDINBLUE_PORT,
+      service: 'SendinBlue',
 
       auth: {
         user: process.env.SENDINBLUE_USER,
@@ -29,8 +28,8 @@ const sendEmail = async options => {
 
   let mailObj = {
     from: `Belinasi <${process.env.EMAIL_FROM}>`,
-    to: options.email,
     subject: options.subject,
+    bcc: options.email,
   };
 
   options.html ? (mailObj.html = options.html) : (mailObj.text = options.message);

@@ -98,17 +98,15 @@ exports.mail = catchAsync(async (req, res, next) => {
     options.message = req.body.message;
   }
 
-  const promiseArr = userEmailArr.map(({ email }) => {
-    options.email = email;
+  const cleanedUsers = userEmailArr.map(({ email }) => email);
 
-    return sendEmail(options);
-  });
+  options.email = cleanedUsers;
 
-  const resultArr = await Promise.all(promiseArr);
+  await sendEmail(options);
 
   res
     .status(201)
-    .json({ status: 'success', message: `${resultArr.length} Email(s) sent successfully.` });
+    .json({ status: 'success', message: `${cleanedUsers.length} Email(s) sent successfully.` });
 });
 
 exports.getNewUsers = catchAsync(async (req, res, next) => {

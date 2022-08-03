@@ -36,7 +36,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(cors({ credentials: true, origin: 'http://127.0.0.1:3000' }));
 }
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors());
+  app.use(cors({ credentials: true }));
 }
 
 const limiter = rateLimit({
