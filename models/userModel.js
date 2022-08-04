@@ -1,15 +1,7 @@
 const { Schema, model } = require('mongoose');
 const bcrypt = require('bcrypt');
 
-const availableRoles = [
-  'customer',
-  'yayasan',
-  'public-figure',
-  'company',
-  'campaign-maker',
-  'admin',
-  'super-admin',
-];
+const availableRoles = ['customer', 'yayasan', 'public-figure', 'company', 'campaign-maker'];
 
 const userSchema = new Schema(
   {
