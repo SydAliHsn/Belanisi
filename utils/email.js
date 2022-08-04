@@ -37,4 +37,17 @@ const sendEmail = async options => {
   await transporter.sendMail(mailObj);
 };
 
-module.exports = sendEmail;
+const sendWelcome = async user => {
+  return await sendEmail({
+    email: user.email,
+    subject: 'Welcome to Belinasi',
+    message: `Thanks ${
+      user.name.split(' ')[0]
+    } for signing up to Belinasi. Let's start buying and donating!`,
+  });
+};
+
+// module.exports = sendEmail;
+
+exports.sendEmail = sendEmail;
+exports.sendWelcome = sendWelcome;

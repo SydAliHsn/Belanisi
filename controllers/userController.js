@@ -1,8 +1,8 @@
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
-const sendEmail = require('../utils/email');
-const { escape, unescape } = require('html-escaper');
+const { sendEmail } = require('../utils/email');
+const { unescape } = require('html-escaper');
 
 const filterObj = (obj, ...properties) => {
   const filteredObj = {};

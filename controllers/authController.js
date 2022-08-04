@@ -1,7 +1,7 @@
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 
-const sendEmail = require('../utils/email');
+const { sendEmail, sendWelcome } = require('../utils/email');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const User = require('../models/userModel');
@@ -74,13 +74,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const user = await User.create(userData);
 
-  sendEmail({
-    email: user.email,
-    subject: 'Welcome to Belinasi',
-    message: `Thanks ${
-      user.name.split(' ')[0]
-    } for signing up to Belinasi. Let's start buying and donating!`,
-  });
+  sendWelcome(user);
 
   createSendToken(user, 201, res);
 });
