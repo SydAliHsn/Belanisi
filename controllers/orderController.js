@@ -3,7 +3,7 @@ const Product = require('../models/productModel');
 const User = require('../models/userModel');
 const AppError = require('../utils/AppError');
 const catchAsync = require('../utils/catchAsync');
-const sendEmail = require('../utils/email');
+const { sendEmail } = require('../utils/email');
 const { formatAggregateArr } = require('../utils/aggregationUtils');
 
 ////////////// Orders /////////////////
@@ -268,5 +268,5 @@ exports.getNewOrders = catchAsync(async (req, res, next) => {
 
   const orders = await Order.find({ orderDate: { $gte: fiveDaysAgo } }).sort({ orderDate: -1 });
 
-  res.status(200).json({ status: 'success', data:{orders} });
+  res.status(200).json({ status: 'success', data: { orders } });
 });

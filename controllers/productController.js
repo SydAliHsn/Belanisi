@@ -1,20 +1,83 @@
 const mongoose = require('mongoose');
 
 const Product = require('../models/productModel');
+const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
 const ApiFeatures = require('../utils/ApiFeatures');
 const Campaign = require('../models/campaignModel');
 const Order = require('../models/orderModel');
-const padAggregateArr = require('../utils/padAggregateArr');
 const { formatAggregateArr } = require('../utils/aggregationUtils');
 const AppError = require('../utils/AppError');
+const s3Client = require('../utils/S3');
+
+const uploadDesign = async (data, fileName) => {
+  // try {
+  const params = {
+    Bucket: process.env.AWS_BUCKET_NAME,
+    ContentEncoding: 'base64',
+    Body: Buffer.from(data, 'base64'),
+    Key: fileName,
+    ContentType: 'image/png',
+  };
+
+  const { Location } = await s3Client.upload(params).promise();
+
+  return Location;
+  // } catch (err) {
+  //   console.log('Error uploading design to s3 bucket!');
+  //   new Error('Error uploading designs!');
+  // }
+};
 
 exports.createProduct = catchAsync(async (req, res, next) => {
   if (!req.body.creator) req.body.creator = req.user.id;
 
+  if (req.user.role !== 'seller' && req.user.role !== 'admin')
+    await User.findByIdAndUpdate(req.user.id, { role: 'seller' });
+
+  if (!req.body.designs.front)
+    return next(new AppError(400, 'A product must have atleast a front design.'));
+
+  // Front design
+  const designPromiseArr = [
+    uploadDesign(
+      req.body.designs.front,
+      Date.now() + req.body.name.replaceAll(' ', '-') + '-front' + '.png'
+    ),
+  ];
+
+  // Back design (if exists)
+  if (req.body.designs.back) {
+    designPromiseArr.push(
+      uploadDesign(
+        req.body.designs.back,
+        Date.now() + req.body.name.replaceAll(' ', '-') + '-back' + '.png'
+      )
+    );
+  }
+
+  const [front, back] = await Promise.all(designPromiseArr);
+
+  // // Front design
+  // front = await uploadDesign(
+  //   req.body.designs.front,
+  //   Date.now() + req.body.name.replaceAll(' ', '-') + '-front' + '.png'
+  // );
+
+  // // Back design (if exists)
+  // if (req.body.designs.back) {
+  //   back = await uploadDesign(
+  //     req.body.designs.back,
+  //     Date.now() + req.body.name.replaceAll(' ', '-') + '-back' + '.png'
+  //   );
+  // }
+
   const productData = {
     name: req.body.name,
-    images: req.body.images,
+    designs: {
+      front,
+      back,
+    },
     materials: req.body.materials,
     message: req.body.message,
     styles: req.body.styles,
@@ -39,7 +102,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
 
   let { query } = apiFeatures.filter().querySearch().limitFields();
 
-  const total = await Product.countDocuments(query);
+  const total = await Product.countDocuments(query.find({ active: { $ne: false } }));
 
   query = apiFeatures.paginate().sort().query;
 
@@ -55,7 +118,7 @@ exports.getAllProducts = catchAsync(async (req, res, next) => {
 exports.getProduct = catchAsync(async (req, res, next) => {
   const product = await Product.findById(req.params.id);
 
-  if (!product) return next('No product found with this ID!', 404);
+  if (!product) return next(new AppError(404, 'No product found with this ID!'));
 
   res.status(200).json({ status: 'success', data: { product } });
 
@@ -65,7 +128,7 @@ exports.getProduct = catchAsync(async (req, res, next) => {
 
 exports.updateProduct = catchAsync(async (req, res, next) => {
   const oldProduct = await Product.findById(req.params.id);
-  if (!oldProduct) return next('No product found with this ID!', 404);
+  if (!oldProduct) return next(new AppError(404, 'No product found with this ID!'));
 
   const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     runValidators: true,
@@ -76,7 +139,8 @@ exports.updateProduct = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteProduct = catchAsync(async (req, res, next) => {
-  const product = await Product.findByIdAndDelete(req.params.id);
+  // const product = await Product.findByIdAndDelete(req.params.id);
+  const product = await Product.findByIdAndUpdate(req.params.id, { active: false });
 
   if (!product)
     return res.status(404).json({ status: 'fail', message: 'No Product found with this ID!' });
@@ -141,7 +205,7 @@ exports.getProductAnalytics = catchAsync(async (req, res, next) => {
       $project: {
         _id: '$_id.id',
         year: '$_id.year',
-        orders: 1,
+        sold: '$sold',
       },
     },
 

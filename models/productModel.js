@@ -7,17 +7,24 @@ const greaterThanOneValidate = type => {
   };
 };
 
+const designSchema = new Schema({
+  front: { type: String, required: true },
+  back: String,
+});
+
 // const productTypes = ['t-shirt', 'hoodie', 'tank-top']; // Add more later
 
 const productSchema = new Schema(
   {
     name: { type: String, required: [true, 'A product must have a name.'], trim: true },
 
-    images: {
-      type: [String],
-      required: [true, 'Please provide the image(s) for the product.'],
-      validate: greaterThanOneValidate('image'),
-    },
+    // images: {
+    //   type: [String],
+    //   required: [true, 'Please provide the image(s) for the product.'],
+    //   validate: greaterThanOneValidate('image'),
+    // },
+
+    designs: designSchema,
 
     materials: String,
 
@@ -45,7 +52,8 @@ const productSchema = new Schema(
 
     category: String,
 
-    status: { type: String, default: 'active' },
+    // status: { type: String, default: 'active', enum: ['active', 'inactive'] },
+    active: { type: Boolean, default: true },
 
     campaign: {
       type: Schema.Types.ObjectId,
@@ -55,11 +63,9 @@ const productSchema = new Schema(
 
     price: { type: Number, required: [true, 'A product must have a price.'] },
 
-    // for Click-Through-Rate (ctr)
-    clicks: { type: Number, default: 0, select: false },
-    views: { type: Number, default: 0, select: false },
-    // for Conversion Rate
-    sales: { type: Number, default: 0, select: false },
+    clicks: { type: Number, default: 0 },
+    views: { type: Number, default: 0 },
+    sales: { type: Number, default: 0 },
 
     createdAt: { type: Date, default: Date.now },
   },
@@ -96,6 +102,12 @@ productSchema.index(
 
 productSchema.pre(/^find/, function (next) {
   this.select('-__v');
+
+  next();
+});
+
+productSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
 
   next();
 });
