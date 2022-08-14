@@ -4,7 +4,12 @@ const catchAsync = require('../utils/catchAsync');
 const { formatAggregateArr } = require('../utils/aggregationUtils');
 
 exports.createVisit = catchAsync(async (req, res, next) => {
-  if (req.path.includes('/static/') || req.path.includes('/assets/')) return next();
+  if (
+    req.path.includes('/static/') ||
+    req.path.includes('/assets/') ||
+    req.path.includes('/new-designer-assets/')
+  )
+    return next();
 
   const date = new Date().setUTCHours(0, 0, 0, 0);
 
