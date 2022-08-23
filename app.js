@@ -52,8 +52,8 @@ app.use('/api', limiter);
 
 app.use(cookieParser());
 
-app.use(express.json({ limit: '230mb' }));
-app.use(express.urlencoded({ limit: '230mb', extended: true }));
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ limit: '15mb', extended: true }));
 
 app.use(xss());
 
