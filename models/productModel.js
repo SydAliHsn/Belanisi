@@ -80,10 +80,9 @@ productSchema.index(
   {
     name: 'text',
     message: 'text',
-    campaign: 'text',
     materials: 'text',
     category: 'text',
-    creator: 'text',
+    type: 'text',
     availableColors: 'text',
   },
   {
@@ -91,10 +90,9 @@ productSchema.index(
     weights: {
       name: 9,
       message: 5,
-      campaign: 7,
       materials: 2,
       category: 4,
-      creator: 6,
+      type: 4,
       availableColors: 1,
     },
   }
