@@ -18,6 +18,9 @@ const globalErrorHandler = require('./controllers/errorController');
 
 const app = express();
 
+// For Heroku
+app.enable('trust proxy');
+
 // Middlewares
 // app.use(helmet({ crossOriginEmbedderPolicy: false }));
 app.use(
@@ -36,7 +39,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(cors({ credentials: true, origin: 'http://127.0.0.1:3000' }));
 }
 if (process.env.NODE_ENV === 'production') {
-  app.use(cors({ credentials: true }));
+  app.use(cors());
 }
 app.options('*', cors());
 

@@ -9,14 +9,15 @@ const User = require('../models/userModel');
 const signToken = id =>
   jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
 
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user._id);
 
   const cookieOptions = {
     httpOnly: true,
-    expire: Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000,
+    expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
   };
-  if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
+
   res.cookie('belinasiToken', token, cookieOptions);
 
   user.password = undefined;
@@ -59,7 +60,7 @@ exports.login = catchAsync(async (req, res, next) => {
     return next(new AppError(400, 'Email or Password incorrect!'));
   }
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -75,7 +76,7 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   sendWelcome(user);
 
-  createSendToken(user, 201, res);
+  createSendToken(user, 201, req, res);
 });
 
 exports.logout = catchAsync(async (req, res, next) => {
@@ -104,5 +105,5 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   await user.save();
 
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
